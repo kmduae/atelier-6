@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liste des stagiaires</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 16px; }
+    #liste { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .carte { border: 1px solid #ddd; border-radius: 8px; padding: 12px; text-align: center; }
+    .carte img { width: 100%; height: 180px; object-fit: cover; border-radius: 6px; background: #eee; }
+  </style>
+</head>
+<body>
+  <h1>Stagiaires inscrits</h1>
+  <p><a href="index.html">← Nouvelle inscription</a></p>
+  <div id="liste">Chargement...</div>
+
+  <script>
+    (async () => {
+      const conteneur = document.getElementById('liste');
+      try {
+        const res = await fetch('/api/liste.php');
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+
+        conteneur.textContent = '';
+        if (data.stagiaires.length === 0) {
+          conteneur.textContent = 'Aucun stagiaire inscrit.';
+          return;
+        }
+        data.stagiaires.forEach(s => {
+          const carte = document.createElement('div');
+          carte.className = 'carte';
+
+          const img = document.createElement('img');
+          img.src = s.photo;
+          img.alt = `${s.prenom} ${s.nom}`;
+          img.loading = 'lazy';
+
+          const nom = document.createElement('strong');
+          nom.textContent = `${s.prenom} ${s.nom}`;
+
+          const ville = document.createElement('div');
+          ville.textContent = s.ville;
+
+          carte.append(img, nom, ville);
+          conteneur.appendChild(carte);
+        });
+      } catch (err) {
+        conteneur.textContent = 'Impossible de charger la liste.';
+      }
+    })();
+  </script>
+</body>
+</html>

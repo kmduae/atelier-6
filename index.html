@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inscription stagiaire</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 420px; margin: 40px auto; padding: 0 16px; }
+    label { display: block; margin-top: 12px; font-weight: 600; }
+    input { width: 100%; padding: 8px; box-sizing: border-box; }
+    button { margin-top: 16px; padding: 10px 16px; cursor: pointer; }
+    #message { margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Inscription</h1>
+  <form id="form">
+    <label>Nom <input type="text" name="nom" required maxlength="100"></label>
+    <label>Prénom <input type="text" name="prenom" required maxlength="100"></label>
+    <label>Ville <input type="text" name="ville" required maxlength="100"></label>
+    <label>Photo <input type="file" name="photo" accept="image/*" required></label>
+    <button type="submit">Inscrire</button>
+  </form>
+  <p id="message"></p>
+  <p><a href="liste.html">Voir la liste des stagiaires</a></p>
+
+  <script>
+    const form = document.getElementById('form');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      message.textContent = 'Envoi en cours...';
+      try {
+        const res = await fetch('/api/inscrire.php', { method: 'POST', body: new FormData(form) });
+        const data = await res.json();
+        message.textContent = data.message;
+        if (data.success) form.reset();
+      } catch (err) {
+        message.textContent = 'Erreur réseau.';
+      }
+    });
+  </script>
+</body>
+</html>
